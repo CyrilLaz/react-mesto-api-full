@@ -34,7 +34,8 @@ const createUser = (req, res, next) => {
       avatar,
       email,
       password: hash,
-    })).then((user) => user.toObject())
+    }))
+    .then((user) => user.toObject())
     .then((user) => res.send({ data: { ...user, password: undefined } }))
     .catch(next);
 };
@@ -49,13 +50,25 @@ const login = (req, res, next) => {
         jwtKey, // секретный код
         { expiresIn: '7d' },
       );
-      return res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true,
-      }).send({ data: { ...user, password: undefined } });
+
+      return res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .send({ data: { ...user, password: undefined } });
     })
     .catch(next);
+};
+
+const logout = (req, res) => {
+  const { jwt: token } = req.cookies;
+  res
+    .cookie('jwt', token, {
+      maxAge: 0,
+    })
+    .send({ message: 'Осуществлен выход из профиля' });
 };
 
 module.exports = {
@@ -63,4 +76,5 @@ module.exports = {
   findUserById,
   createUser,
   login,
+  logout,
 };
