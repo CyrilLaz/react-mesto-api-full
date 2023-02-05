@@ -8,6 +8,14 @@ const findAllCards = (req, res, next) => {
     .catch(next);
 };
 
+const findEighteenLastCards = (req, res, next) => {
+  Card.find({})
+    .sort('-createdAt')
+    .limit(18)
+    .then((data) => res.send({ data }))
+    .catch(next);
+};
+
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
@@ -20,11 +28,13 @@ const removeCard = (req, res, next) => {
   Card.isOwnerCheck(req.params.cardId, req.user._id)
     .then((owned) => {
       if (!owned) {
-        return Promise.reject(new NoRightError('Удалить карточку может только владелец'));
+        return Promise.reject(
+          new NoRightError('Удалить карточку может только владелец'),
+        );
       }
-      return Card.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send({ message: 'Карточка удалена' }));
-    }).catch(next);
+      return Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Карточка удалена' }));
+    })
+    .catch(next);
 };
 
 const putLike = (req, res, next) => {
@@ -37,7 +47,11 @@ const putLike = (req, res, next) => {
       if (card) {
         return res.send({ data: card });
       }
-      return Promise.reject(new NoExistError(`Передан несуществующий _id: ${req.params.cardId} карточки.`));
+      return Promise.reject(
+        new NoExistError(
+          `Передан несуществующий _id: ${req.params.cardId} карточки.`,
+        ),
+      );
     })
     .catch(next); // Обработка ошибки;
 };
@@ -52,7 +66,11 @@ const removeLike = (req, res, next) => {
       if (card) {
         return res.send({ data: card });
       }
-      return Promise.reject(new NoExistError(`Передан несуществующий _id: ${req.params.cardId} карточки.`));
+      return Promise.reject(
+        new NoExistError(
+          `Передан несуществующий _id: ${req.params.cardId} карточки.`,
+        ),
+      );
     })
     .catch(next); // Обработка ошибки;
 };
@@ -63,4 +81,5 @@ module.exports = {
   removeCard,
   putLike,
   removeLike,
+  findEighteenLastCards,
 };
