@@ -9,20 +9,18 @@ const NoExistError = require('../errors/NoExistError');
 const NoRightError = require('../errors/NoRightError');
 const UncorrectLoginError = require('../errors/UncorrectLoginError');
 const UnAuthError = require('../errors/UnAuthError');
+const TooManyRequestError = require('../errors/TooManyRequestError');
 
 module.exports.handlerErrors = (err, req, res, next) => {
   const { statusCode = defaultErrorStatus, message } = err;
 
-  if (err instanceof UnAuthError) {
-    return res.status(err.statusCode).send({ message });
-  }
-  if (err instanceof UncorrectLoginError) {
-    return res.status(err.statusCode).send({ message });
-  }
-  if (err instanceof NoRightError) {
-    return res.status(err.statusCode).send({ message });
-  }
-  if (err instanceof NoExistError) {
+  if (
+    err instanceof TooManyRequestError
+    || err instanceof UnAuthError
+    || err instanceof UncorrectLoginError
+    || err instanceof NoRightError
+    || err instanceof NoExistError
+  ) {
     return res.status(err.statusCode).send({ message });
   }
 

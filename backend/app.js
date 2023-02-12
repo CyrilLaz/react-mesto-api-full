@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -18,11 +19,15 @@ const routerErrPath = require('./routers/errPath');
 const { handlerErrors } = require('./middlewares/errors');
 const { createUser, login, logout } = require('./controllers/users');
 const cors = require('./middlewares/cors');
+const apiRequestLimiter = require('./middlewares/apiRequestLimiter');
 
 const { PORT = 3000, PATH_MONGO = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 const app = express();
+
+app.use(apiRequestLimiter);
 app.use(cors);
+app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
